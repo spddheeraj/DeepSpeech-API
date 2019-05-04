@@ -9,15 +9,16 @@
          4. I want a pizza.<br>
          5. I want to order a pizza.
       </p>
-      <div class="mt-4 col-md-12">
+      <div *ngFor="let number of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]" class="mt-4 col-md-12">
+         <p>{{number}}</p>
          <form name="recording">
-            <a (click)="initiateRecording()" class="btn btn-primary" style="color: aliceblue;"
-            *ngIf="!recording"> Start Recording </a> <i class="fas fa-microphone"></i>
-            <a (click)="stopRecording()" class="btn btn-danger" style="color: aliceblue;"
-            *ngIf="recording"> Stop Recording </a>
+            <a (click)="initiateRecording(number)" class="btn btn-primary" style="color: aliceblue;"
+            *ngIf="!recording[number]"> Start Recording </a> <i class="fas fa-microphone"></i>
+            <a (click)="stopRecording(number)" class="btn btn-danger" style="color: aliceblue;"
+            *ngIf="recording[number]"> Stop Recording </a>
             <div class="clearfix"></div>
-            <audio controls="" *ngIf="url">
-               <source [src]="sanitize(url)" type="audio/wav">
+            <audio controls="" *ngIf="urls[number]">
+               <source [src]="sanitize(urls[number])" type="audio/wav">
             </audio>
          </form>
       </div>

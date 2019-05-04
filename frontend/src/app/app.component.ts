@@ -14,8 +14,8 @@ export class AppComponent {
 
     fileToUpload: File = null;
     private record;
-    recording = false;
-    private url;
+    recording = [];
+    private urls = [];
     private error;
     response ;
     isloader = false;
@@ -25,16 +25,16 @@ export class AppComponent {
     constructor(private domSanitizer: DomSanitizer, private appService: AppService, private spinner: NgxSpinnerService) {
     }
 
-    sanitize(url:string){
+    sanitize(url:string, number:number){
         return this.domSanitizer.bypassSecurityTrustUrl(url);
     }
 
     /**
      * Start recording.
      */
-    initiateRecording() {
+    initiateRecording(number:number) {
         
-        this.recording = true;
+        this.recording[number] = true;
         let mediaConstraints = {
             video: false,
             audio: true
@@ -62,21 +62,24 @@ export class AppComponent {
     /**
      * Stop recording.
      */
-    stopRecording() {
-        this.recording = false;
-        this.record.stop(this.processRecording.bind(this));
+    stopRecording(number:number) {
+        this.recording[number] = false;
+        // this.record.stop(this.processRecording.bind(this));
+        this.record.stop((blob) => {
+          this.processRecording(blob, number);
+        });
     }
 
     /**
      * processRecording Do what ever you want with blob
      * @param  {any} blob Blog
      */
-    processRecording(blob) {
+    processRecording(blob, number) {
       this.isloader=true;
       this.spinner.show();
-      this.url = URL.createObjectURL(blob);
-      console.log(this.url)
-      this.response = this.appService.save(blob).subscribe(result => {
+      this.urls[number] = URL.createObjectURL(blob);
+      console.log(this.urls[number])
+      this.response = this.appService.save(blob, number).subscribe(result => {
         this.response = result;
         console.log('s ',this.response.username);
         this.text = this.response.username;

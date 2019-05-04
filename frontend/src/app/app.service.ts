@@ -23,12 +23,17 @@ export class AppService {
   constructor(private httpClient: HttpClient ) { }
   baseUrl: string = "https://c6-vx-test.avaamo.com/file";
 
-  save(blob: URL): Observable<{}>{
+  save(blob: URL, number: string): Observable<{}>{
     var new_blob;
     getBase64(blob).then(
       data => new_blob=data
     );
-    return this.httpClient.post(this.baseUrl, blob, httpOptions).pipe(
+    return this.httpClient.post(this.baseUrl, blob, {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+        'number': number
+      })
+    }).pipe(
       data => {
         return data;
     });

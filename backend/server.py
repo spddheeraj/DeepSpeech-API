@@ -53,5 +53,23 @@ def post():
         username=output.decode("utf-8") 
     )
 
+@app.route('/numbers', methods=['POST'])
+@cross_origin()
+def post():
+    print(request.headers)
+
+    with open(request.headers.number + "file.wav", "wb") as vid:
+        vid.write(request.data)
+
+    proc = subprocess.Popen(
+        "deepspeech --model models/output_graph.pbmm --alphabet models/alphabet.txt --lm models/lm.binary --trie models/trie --audio file.wav",
+        shell=True, stdout=subprocess.PIPE, )
+    output = proc.communicate()[0]
+    print(output)
+
+    return jsonify(
+        username=output
+    )
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80,debug=True)

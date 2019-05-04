@@ -20,6 +20,7 @@ export class AppComponent {
     response ;
     isloader = false;
     text: string;
+    blob = null;
 
     constructor(private domSanitizer: DomSanitizer, private appService: AppService, private spinner: NgxSpinnerService) {
     }
@@ -49,7 +50,8 @@ export class AppComponent {
     successCallback(stream) {
         var options = {
             mimeType: "audio/wav",
-            numberOfAudioChannels: 1
+            numberOfAudioChannels: 1,
+            desiredSampRate: 16 * 1000
         };
         //Start Actuall Recording
         var StereoAudioRecorder = RecordRTC.StereoAudioRecorder;
@@ -92,7 +94,7 @@ export class AppComponent {
 
     handleFileInput(files: FileList) {
       this.fileToUpload = files.item(0);
-      this.uploadFileToActivity()
+      this.uploadFileToActivity();
   }
 
   uploadFileToActivity() {

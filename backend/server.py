@@ -11,41 +11,46 @@ import base64
 import soundfile as sf
 from flask_cors import CORS, cross_origin
 import subprocess
+import time
+import json
 
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
+MODEL_FILE = '../../DeepSpeech/fine_tune_model/output_graph.pb'
+ALPHABET_FILE = '../../DeepSpeech/models/alphabet.txt'
+LANGUAGE_MODEL =  '../../DeepSpeech/models/lm.binary'
+TRIE_FILE =  '../../DeepSpeech/models/trie'
+
 @app.route('/', methods=['POST'])
 @cross_origin()
 def post():
-    with open("file.wav", "wb") as vid:
-        vid.write(request.data)
+    print("Here")
+    ts = time.time()
+    ts = str(ts)
+    ts_label = ts + "_label.txt" 
+    ts += ".wav"
+
+    data = json.loads(request.data)
+    print("-------------")
+    print(request.data)
+    print(data)
+    print("-------------")
+
+    with open(ts, "wb") as vid:
+        vid.write(base64.b64decode(data['audio']))
+    # with open(ts_label, "w") as label:
+    #     label.write(request.label)
 
     proc = subprocess.Popen(
-        "deepspeech --model models/output_graph.pbmm --alphabet models/alphabet.txt --lm models/lm.binary --trie models/trie --audio file.wav",
+        f"deepspeech --model {MODEL_FILE} --alphabet {ALPHABET_FILE} --lm {LANGUAGE_MODEL} --trie {TRIE_FILE} --audio {ts}",
         shell=True, stdout=subprocess.PIPE, )
     output = proc.communicate()[0]
     print(output)
 
     return jsonify(
-        username=output
-    )
-
-@app.route('/file', methods=['POST'])
-@cross_origin()
-def post1():
-    with open("file.wav", "wb") as vid:
-        vid.write(request.data)
-
-    proc = subprocess.Popen(
-        "deepspeech --model models/output_graph.pbmm --alphabet models/alphabet.txt --lm models/lm.binary --trie models/trie --audio file.wav",
-        shell=True, stdout=subprocess.PIPE, )
-    output = proc.communicate()[0]
-    print(output)
-
-    return jsonify(
-	username=output
+        username=output.decode("utf-8") 
     )
 
 if __name__ == '__main__':

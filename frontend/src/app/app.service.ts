@@ -9,24 +9,40 @@ const httpOptions = {
   })
 };
 
+function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+}
+
 @Injectable()
 export class AppService {
   constructor(private httpClient: HttpClient ) { }
-  baseUrl: string = 'http://localhost:80/';
+  baseUrl: string = "https://c6-vx-test.avaamo.com/file";
 
   save(blob: URL): Observable<{}>{
+    var new_blob;
+    getBase64(blob).then(
+      data => new_blob=data
+    );
     return this.httpClient.post(this.baseUrl, blob, httpOptions).pipe(
       data => {
-          return data;
-      });
-    }
+        return data;
+    });
+  }
 
-    postFile(fileToUpload: File): Observable<{}> {
+  postFile(fileToUpload: File): Observable<{}> {
     console.log("inside upload file")
-    const endpoint = this.baseUrl+'file';
-    return this.httpClient.post(endpoint, fileToUpload, httpOptions).pipe(
+    // var new_blob;
+    // getBase64(fileToUpload).then(
+    //   data => new_blob=data
+    // );
+    return this.httpClient.post(this.baseUrl, fileToUpload, httpOptions).pipe(
       data => {
           return data;
-      });
+    });
   }
 }
